@@ -9,6 +9,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.FocusEvent.Cause;
 import java.awt.Component;
+import java.awt.Container;
 
 public class SudokuTextField extends JTextField {
    public SudokuTextField() {
@@ -67,26 +68,28 @@ public class SudokuTextField extends JTextField {
                .getCurrentKeyboardFocusManager()
                .getFocusOwner();
          if (focusOwner != null) {
-            while (!shouldStopSwitchingFocus) {
-               Component nextFocusOwner = focusOwner
-                     .getFocusCycleRootAncestor()
-                     .getFocusTraversalPolicy()
-                     .getComponentAfter(getFocusCycleRootAncestor(), focusOwner);
-               if (nextFocusOwner instanceof SudokuTextField) {
-                  SudokuTextField textField = (SudokuTextField) nextFocusOwner;
-                  if (textField.getText().equals("")) {
-                     textField.requestFocus();
-                     shouldStopSwitchingFocus = true;
+            Container root = focusOwner.getFocusCycleRootAncestor();
+            if (root != null) {
+               while (!shouldStopSwitchingFocus) {
+                  Component nextFocusOwner = root
+                        .getFocusTraversalPolicy()
+                        .getComponentAfter(root, focusOwner);
+                  if (nextFocusOwner instanceof SudokuTextField) {
+                     SudokuTextField textField = (SudokuTextField) nextFocusOwner;
+                     if (textField.getText().equals("")) {
+                        textField.requestFocus();
+                        shouldStopSwitchingFocus = true;
+                     } else {
+                        focusOwner = nextFocusOwner;
+                     }
                   } else {
                      focusOwner = nextFocusOwner;
                   }
-               } else {
-                  focusOwner = nextFocusOwner;
+                  if (counter > 9999) {
+                     shouldStopSwitchingFocus = true;
+                  }
+                  counter++;
                }
-               if (counter > 9999) {
-                  shouldStopSwitchingFocus = true;
-               }
-               counter++;
             }
          }
       }
