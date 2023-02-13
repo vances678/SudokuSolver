@@ -135,11 +135,11 @@ public class SudokuGui {
    }
 
    private JPanel createBoardPanel(boolean isSolution) {
-      JPanel boardPanel = new JPanel(new GridLayout(this.board.boxSize, this.board.boxSize));
+      JPanel boardPanel = new JPanel(new GridLayout(this.board.boxSize, this.board.boxSize, 0, 0));
       for (int row = 0; row < this.board.boxSize; row++) {
          for (int col = 0; col < this.board.boxSize; col++) {
             JPanel boxPanel = new JPanel();
-            boxPanel.setLayout(new GridLayout(this.board.boxSize, this.board.boxSize));
+            boxPanel.setLayout(new GridLayout(this.board.boxSize, this.board.boxSize, 0, 0));
             boxPanel.setBorder(BorderFactory.createLineBorder(Color.black));
             for (int i = 0; i < this.board.size; i++) {
                int boardIndex = i
@@ -160,6 +160,8 @@ public class SudokuGui {
                         + (boardIndex % this.board.boxSize);
                   textField.setText(String
                         .valueOf(this.board.cells.get(smallRow).get(smallCol)));
+                  // TODO: FIX TEXTFIELD BORDER
+                  textField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
                   textFields[boardIndex] = textField;
                   boxPanel.add(textField);
                }
