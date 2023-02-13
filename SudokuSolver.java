@@ -19,7 +19,7 @@
 
 public class SudokuSolver {
    public static void main(String args[]) {
-      Board board = Board.random(4);
+      Board board = Board.random(9);
       SudokuGui sudokuGui = new SudokuGui(board);
       sudokuGui.showGui();
    }
@@ -29,9 +29,14 @@ public class SudokuSolver {
  * A-star ideas
  * --------------
  * - Weigh each number based on how many times it has already been used --> sort
- * cells highest weights first (ex. pick cell with 2 possible choices over 9)
+ * cells highest weights first
+ * 
+ * - Pick cells with least amount of choices (ex. (1 or 2) vs (2, 5, 7 or 8))
+ * --- maybe (row options + column options + box options)?
  * 
  * - Do a lot of pruning (eliminate branches before continuing search)
  * --- row, col, box incorrect
  * 
+ * 
+ * If none of this works, can resort to backtracking with DFS
  */
