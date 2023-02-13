@@ -50,7 +50,7 @@ public class Board {
          File file = puzzleFiles[(int) (Math.random() * puzzleFiles.length)];
          Scanner reader = new Scanner(file);
          while (reader.hasNextLine()) {
-            String line = reader.nextLine().replaceAll("[^*0-9A-Z]*", "");
+            String line = reader.nextLine().replaceAll("[^*.0-9A-Z]*", "");
             if (line != "") {
                ArrayList<Character> row = new ArrayList<Character>();
                for (char value : line.toCharArray()) {
@@ -60,6 +60,30 @@ public class Board {
                         value = 'G';
                      } else if (value == '*') {
                         value = '0';
+                     }
+                  }
+                  // Replaces Q-Y with 1-9 and '.' with '0' for 16x16
+                  if (boardSize == 25) {
+                     if (value == '.') {
+                        value = '0';
+                     } else if (value == 'Q') {
+                        value = '1';
+                     } else if (value == 'R') {
+                        value = '2';
+                     } else if (value == 'S') {
+                        value = '3';
+                     } else if (value == 'T') {
+                        value = '4';
+                     } else if (value == 'U') {
+                        value = '5';
+                     } else if (value == 'V') {
+                        value = '6';
+                     } else if (value == 'W') {
+                        value = '7';
+                     } else if (value == 'X') {
+                        value = '8';
+                     } else if (value == 'Y') {
+                        value = '9';
                      }
                   }
                   row.add(value);
