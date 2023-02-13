@@ -7,6 +7,7 @@ import javax.swing.text.BadLocationException;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.FocusEvent.Cause;
 import java.awt.Component;
 
 public class SudokuTextField extends JTextField {
@@ -17,7 +18,13 @@ public class SudokuTextField extends JTextField {
       this.addFocusListener(new FocusListener() {
          @Override
          public void focusGained(FocusEvent e) {
-            selectAll();
+            if (e.getCause() == Cause.ACTIVATION) {
+               // remove the focus gained when starting application
+               KeyboardFocusManager.getCurrentKeyboardFocusManager().clearFocusOwner();
+            } else {
+               // selects text when focus is gained
+               selectAll();
+            }
          }
 
          @Override

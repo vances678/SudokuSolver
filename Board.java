@@ -1,5 +1,8 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 public class Board {
    public int size;
@@ -40,10 +43,27 @@ public class Board {
    }
 
    public static Board random(int boardSize) {
-      Board board = new Board(boardSize);
+      ArrayList<ArrayList<Character>> cells = new ArrayList<ArrayList<Character>>();
+      File folder = new File("puzzles");
+      File[] puzzleFiles = folder.listFiles();
+      try {
+         File file = puzzleFiles[(int) (Math.random() * puzzleFiles.length)];
+         Scanner reader = new Scanner(file);
+         while (reader.hasNextLine()) {
+            String line = reader.nextLine().replaceAll("[^0-9A-Z]*", "");
+            ArrayList<Character> row = new ArrayList<Character>();
+            for (char value : line.toCharArray()) {
+               row.add(value);
+            }
+            cells.add(row);
+         }
+         reader.close();
+      } catch (FileNotFoundException e) {
+         System.out.println("Error accessing file.");
+         e.printStackTrace();
+      }
 
-      // TODO: Implement random board
-      return board;
+      return new Board(cells);
    }
 
    public void print() {
@@ -121,7 +141,6 @@ public class Board {
    public boolean areRowsValid() {
       for (int i = 0; i < this.size; i++) {
          if (!this.isRowValid(i)) {
-            System.out.println(i);
             return false;
          }
       }

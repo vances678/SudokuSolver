@@ -134,27 +134,31 @@ public class SudokuGui {
    }
 
    private JPanel createBoardPanel(boolean isSolution) {
-      JPanel boardPanel = new JPanel(new GridLayout(board.boxSize, board.boxSize));
-      for (int row = 0; row < board.boxSize; row++) {
-         for (int col = 0; col < board.boxSize; col++) {
+      JPanel boardPanel = new JPanel(new GridLayout(this.board.boxSize, this.board.boxSize));
+      for (int row = 0; row < this.board.boxSize; row++) {
+         for (int col = 0; col < this.board.boxSize; col++) {
             JPanel boxPanel = new JPanel();
-            boxPanel.setLayout(new GridLayout(board.boxSize, board.boxSize));
+            boxPanel.setLayout(new GridLayout(this.board.boxSize, this.board.boxSize));
             boxPanel.setBorder(BorderFactory.createLineBorder(Color.black));
-            for (int i = 0; i < board.size; i++) {
+            for (int i = 0; i < this.board.size; i++) {
                int boardIndex = i
-                     + col * board.size
-                     + row * board.size * board.boxSize;
+                     + col * this.board.size
+                     + row * this.board.size * this.board.boxSize;
                if (isSolution) {
                   JLabel label = new JLabel();
-                  label.setText(String.valueOf(boardIndex));
+                  label.setText("");
                   label.setHorizontalAlignment(SwingConstants.CENTER);
                   label.setBorder(BorderFactory.createLineBorder(Color.black));
                   labels[boardIndex] = label;
                   boxPanel.add(label);
                } else {
                   SudokuTextField textField = new SudokuTextField();
-                  textField.setText(String.valueOf(board.cells.get(0).get(0)));
-                  // TODO: convert from [row][column] to [bigrow][bigcolumn][i]
+                  int smallRow = (int) Math.floor(boardIndex / this.board.boxSize) % this.board.boxSize
+                        + (int) Math.floor(boardIndex / (this.board.boxSize * this.board.size)) * this.board.boxSize;
+                  int smallCol = (int) (Math.floor(boardIndex / this.board.size) * this.board.boxSize) % this.board.size
+                        + (boardIndex % this.board.boxSize);
+                  textField.setText(String
+                        .valueOf(this.board.cells.get(smallRow).get(smallCol)));
                   textFields[boardIndex] = textField;
                   boxPanel.add(textField);
                }

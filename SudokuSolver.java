@@ -12,6 +12,7 @@
 public class SudokuSolver {
    public static void main(String args[]) {
       Board board = Board.random(9);
+      board.print();
       SudokuGui sudokuGui = new SudokuGui(board);
       sudokuGui.showGui();
    }
