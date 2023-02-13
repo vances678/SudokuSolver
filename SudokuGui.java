@@ -94,7 +94,8 @@ public class SudokuGui {
       });
       JButton randomButton = createButton("Randomize", new Color(195, 177, 225));
       randomButton.addActionListener(e -> {
-         // TODO: Randomize current board from board list
+         this.board = Board.random(9);
+         // TODO: DO SMT OTHER THAN RANDOM;
       });
       leftButtonPanel.add(solveButton);
       leftButtonPanel.add(checkButton);

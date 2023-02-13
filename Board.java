@@ -44,18 +44,28 @@ public class Board {
 
    public static Board random(int boardSize) {
       ArrayList<ArrayList<Character>> cells = new ArrayList<ArrayList<Character>>();
-      File folder = new File("puzzles");
+      File folder = new File("puzzles/" + boardSize + "x" + boardSize);
       File[] puzzleFiles = folder.listFiles();
       try {
          File file = puzzleFiles[(int) (Math.random() * puzzleFiles.length)];
          Scanner reader = new Scanner(file);
          while (reader.hasNextLine()) {
-            String line = reader.nextLine().replaceAll("[^0-9A-Z]*", "");
-            ArrayList<Character> row = new ArrayList<Character>();
-            for (char value : line.toCharArray()) {
-               row.add(value);
+            String line = reader.nextLine().replaceAll("[^*0-9A-Z]*", "");
+            if (line != "") {
+               ArrayList<Character> row = new ArrayList<Character>();
+               for (char value : line.toCharArray()) {
+                  // Replaces '0' with 'G' and '*' with '0' for 16x16
+                  if (boardSize == 16) {
+                     if (value == '0') {
+                        value = 'G';
+                     } else if (value == '*') {
+                        value = '0';
+                     }
+                  }
+                  row.add(value);
+               }
+               cells.add(row);
             }
-            cells.add(row);
          }
          reader.close();
       } catch (FileNotFoundException e) {
