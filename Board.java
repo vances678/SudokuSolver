@@ -52,7 +52,6 @@ public class Board {
          while (reader.hasNextLine()) {
             String line = reader.nextLine().replaceAll("[^*.0-9A-Z]*", "");
             if (!line.equals("")) {
-               System.out.println("line: " + line);
                ArrayList<Character> row = new ArrayList<Character>();
                for (char value : line.toCharArray()) {
                   // Replaces '0' with 'G' and '*' with '0' for 16x16
@@ -89,7 +88,6 @@ public class Board {
                   }
                   row.add(value);
                }
-               System.out.println("row: " + row);
                cells.add(row);
             }
          }

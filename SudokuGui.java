@@ -160,7 +160,6 @@ public class SudokuGui {
                         + (boardIndex % this.board.boxSize);
                   textField.setText(String
                         .valueOf(this.board.cells.get(smallRow).get(smallCol)));
-                  // TODO: FIX TEXTFIELD BORDER
                   textField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
                   textFields[boardIndex] = textField;
                   boxPanel.add(textField);
