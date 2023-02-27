@@ -1,18 +1,20 @@
-import javax.swing.JTextField;
-import javax.swing.JLabel;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JButton;
-import javax.swing.BorderFactory;
-import javax.swing.SwingConstants;
-import java.awt.GridLayout;
-import java.awt.GridBagLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.util.ArrayList;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 public class SudokuGui {
    private Board board;
+   private Board solutionBoard;
    private JTextField[] textFields;
    private JLabel[] labels;
 
@@ -66,6 +68,26 @@ public class SudokuGui {
       this.board.updateCells(values);
    }
 
+   private void updateLabels() {
+      for (int row = 0; row < this.solutionBoard.boxSize; row++) {
+         for (int col = 0; col < this.solutionBoard.boxSize; col++) {
+            for (int i = 0; i < this.solutionBoard.size; i++) {
+               int boardIndex = i
+                     + col * this.solutionBoard.size
+                     + row * this.solutionBoard.size * this.solutionBoard.boxSize;
+               int smallRow = (int) Math.floor(boardIndex / this.solutionBoard.boxSize) % this.solutionBoard.boxSize
+                     + (int) Math.floor(boardIndex / (this.solutionBoard.boxSize * this.solutionBoard.size))
+                           * this.solutionBoard.boxSize;
+               int smallCol = (int) (Math.floor(boardIndex / this.solutionBoard.size) * this.solutionBoard.boxSize)
+                     % this.solutionBoard.size
+                     + (boardIndex % this.solutionBoard.boxSize);
+               labels[boardIndex].setText(String
+                     .valueOf(this.solutionBoard.cells.get(smallRow).get(smallCol)));
+            }
+         }
+      }
+   }
+
    private JFrame createMainFrame() {
       JFrame frame = new JFrame("Sudoku Solver");
       frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -79,7 +101,34 @@ public class SudokuGui {
       JPanel mainButtonPanel = new JPanel(new GridLayout(1, 2, 20, 20));
 
       JPanel leftButtonPanel = new JPanel(new GridLayout(4, 1, 20, 20));
-      JButton solveButton = createButton("Solve", new Color(119, 221, 118));
+      JButton solveAStarButton = createButton("Solve (A*)", new Color(119, 221, 118));
+      solveAStarButton.addActionListener(e -> {
+         updateBoardData();
+         Board solutionBoard = board.solveAStar();
+         if (solutionBoard.equals(board)) {
+            System.err.println("Board already solved or error solving board");
+         } else {
+            solutionBoard.print();
+         }
+      });
+      JButton solveDFSButton = createButton("Solve (DFS)", new Color(195, 177, 225));
+      solveDFSButton.addActionListener(e -> {
+         updateBoardData();
+         solutionBoard = board.solveDFS();
+         if (solutionBoard.equals(board)) {
+            System.err.println("Board already solved or error solving board");
+         } else {
+            System.out.println("");
+            System.out.println("----------------------");
+            System.out.println("Input:");
+            board.print();
+            System.out.println();
+            System.out.println("Solution:");
+            solutionBoard.print();
+            System.out.println("----------------------");
+            updateLabels();
+         }
+      });
       JButton checkButton = createButton("Check", new Color(233, 236, 107));
       checkButton.addActionListener(e -> {
          updateBoardData();
@@ -92,15 +141,10 @@ public class SudokuGui {
          }
          updateBoardData();
       });
-      JButton randomButton = createButton("Randomize", new Color(195, 177, 225));
-      randomButton.addActionListener(e -> {
-         this.board = Board.random(9);
-         // TODO: DO SMT OTHER THAN RANDOM;
-      });
-      leftButtonPanel.add(solveButton);
+      leftButtonPanel.add(solveAStarButton);
+      leftButtonPanel.add(solveDFSButton);
       leftButtonPanel.add(checkButton);
       leftButtonPanel.add(clearButton);
-      leftButtonPanel.add(randomButton);
       mainButtonPanel.add(leftButtonPanel);
 
       JPanel rightButtonPanel = new JPanel(new GridLayout(4, 1, 20, 20));

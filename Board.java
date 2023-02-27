@@ -1,14 +1,17 @@
+import java.awt.geom.Point2D;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.io.File;
-import java.io.FileNotFoundException;
 
 public class Board {
    public int size;
    public int boxSize;
    public ArrayList<ArrayList<Character>> cells;
    public List<Character> validValues;
+   public int cost;
+   public ArrayList<Point2D> constraints;
 
    public Board(int boardSize) {
       this.size = boardSize;
@@ -34,12 +37,12 @@ public class Board {
          possibleValues.add((char) i);
       }
 
-      this.validValues = possibleValues.subList(0, boardSize - 1);
+      this.validValues = possibleValues.subList(0, boardSize);
    }
 
    public Board(ArrayList<ArrayList<Character>> cells) {
       this(cells.get(0).size());
-      this.cells = cells;
+      this.updateCells(cells);
    }
 
    public static Board random(int boardSize) {
@@ -115,12 +118,28 @@ public class Board {
       }
    }
 
-   public void updateCells(ArrayList<ArrayList<Character>> cells) {
-      if (cells.size() == this.size && cells.get(0).size() == this.size) {
-         this.cells = cells;
+   public void updateCells(ArrayList<ArrayList<Character>> newCells) {
+      if (newCells.size() == this.size && newCells.get(0).size() == this.size) {
+         for (int r = 0; r < newCells.size(); r++) {
+            ArrayList<Character> row = newCells.get(r);
+            for (int c = 0; c < row.size(); c++) {
+               this.cells.get(r).set(c, row.get(c));
+            }
+         }
       } else {
          System.err.println("Cannot update board cells: invalid input dimensions");
       }
+   }
+
+   public boolean isValid() {
+      ArrayList<Boolean> validity = new ArrayList<Boolean>();
+      validity.add(this.areRowsValid());
+      validity.add(this.areColumnsValid());
+      validity.add(this.areBoxesValid());
+      if (validity.get(0) && validity.get(1) && validity.get(2)) {
+         return true;
+      }
+      return false;
    }
 
    public void checkValidity() {
@@ -213,5 +232,118 @@ public class Board {
          }
       }
       return true;
+   }
+
+   public boolean isFull() {
+      boolean isFull = true;
+      for (ArrayList<Character> row : this.cells) {
+         for (char c : row) {
+            if (!validValues.contains(c)) {
+               isFull = false;
+            }
+         }
+      }
+      return isFull;
+   }
+
+   public ArrayList<Point2D> getConstraints() {
+      ArrayList<Point2D> constraints = new ArrayList<Point2D>();
+      for (ArrayList<Character> row : this.cells) {
+         for (char value : row) {
+            if (value == '0') {
+               // TODO: Get possibilities left in row
+               // TODO: Get possibilities left in column
+               // TODO: Get possibilities left in box
+            }
+         }
+      }
+      return constraints;
+   }
+
+   public ArrayList<Board> getNeighbors() {
+      // fill first empty cell with all possible values
+      ArrayList<Board> neighbors = new ArrayList<Board>();
+      for (int r = 0; r < this.cells.size(); r++) {
+         ArrayList<Character> row = this.cells.get(r);
+         for (int c = 0; c < row.size(); c++) {
+            char value = row.get(c);
+            if (value == '0') {
+               for (char validValue : this.validValues) {
+                  Board neighbor = new Board(this.cells);
+                  neighbor.cells.get(r).set(c, validValue);
+                  neighbors.add(neighbor);
+               }
+               return neighbors;
+            }
+         }
+      }
+
+      return new ArrayList<Board>();
+   }
+
+   public static int getCost(Board currentBoard, Board nextBoard) {
+      // g = cost from start node to current node
+      int g = currentBoard.cost;
+      // h = estimated distance from the current node to the end node
+      int h = nextBoard.getConstraints().size();
+
+      return g + h;
+   }
+
+   public Board solveAStar() {
+      ArrayList<Board> queue = new ArrayList<Board>();
+      queue.add(this);
+
+      while (!queue.isEmpty()) {
+         Board board = queue.remove(0);
+         if (board.isFull()) {
+            if (board.isValid()) {
+               return board;
+            }
+         }
+         ArrayList<Board> neighbors = board.getNeighbors();
+         System.out.println(neighbors);
+         for (Board neighbor : neighbors) {
+            neighbor.cost = Board.getCost(board, neighbor);
+            boolean isPathAdded = false;
+            int i = 0;
+            while (!isPathAdded && i < queue.size()) {
+               if (neighbor.cost < queue.get(i).cost) {
+                  queue.add(i, neighbor);
+                  isPathAdded = true;
+               } else {
+                  i++;
+               }
+            }
+            if (queue.size() == 0) {
+               queue.add(neighbor);
+            }
+         }
+      }
+
+      return this;
+   }
+
+   public Board solveDFS() {
+      ArrayList<Board> queue = new ArrayList<Board>();
+      queue.add(this);
+
+      while (!queue.isEmpty()) {
+         Board currentBoard = queue.remove(queue.size() - 1);
+
+         if (currentBoard.isFull()) {
+            if (currentBoard.isValid()) {
+               return currentBoard;
+            }
+         }
+
+         ArrayList<Board> neighbors = currentBoard.getNeighbors();
+         for (Board neighbor : neighbors) {
+            queue.add(neighbor);
+         }
+
+      }
+
+      return this;
    }
 }
