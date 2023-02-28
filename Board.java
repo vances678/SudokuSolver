@@ -246,22 +246,42 @@ public class Board {
       return isFull;
    }
 
-   public ArrayList<Point2D> getConstraints() {
-      ArrayList<Point2D> constraints = new ArrayList<Point2D>();
-      for (ArrayList<Character> row : this.cells) {
-         for (char value : row) {
-            if (value == '0') {
-               // TODO: Get possibilities left in row
-               // TODO: Get possibilities left in column
-               // TODO: Get possibilities left in box
+   public boolean isValidMove(int moveRow, int moveCol) {
+      boolean isValidMove = true;
+      char move = this.cells.get(moveRow).get(moveCol);
+
+      // check row
+      for (int c = 0; c < this.size; c++) {
+         if (c != moveCol && move == this.cells.get(moveRow).get(c)) {
+            isValidMove = false;
+         }
+      }
+
+      // check column
+      for (int r = 0; r < this.size; r++) {
+         if (r != moveRow && move == this.cells.get(r).get(moveCol)) {
+            isValidMove = false;
+         }
+      }
+
+      // check box
+      int startRow = this.boxSize * (moveRow / boxSize);
+      int startCol = this.boxSize * (moveCol / boxSize);
+      for (int i = 0; i < this.boxSize; i++) {
+         for (int j = 0; j < this.boxSize; j++) {
+            int row = startRow + i;
+            int col = startCol + j;
+            if (row != moveRow && col != moveCol && move == this.cells.get(row).get(col)) {
+               isValidMove = false;
             }
          }
       }
-      return constraints;
+
+      return isValidMove;
    }
 
    public ArrayList<Board> getNeighbors() {
-      // fill first empty cell with all possible values
+      // fill first empty cell with all possible VALID values
       ArrayList<Board> neighbors = new ArrayList<Board>();
       for (int r = 0; r < this.cells.size(); r++) {
          ArrayList<Character> row = this.cells.get(r);
@@ -271,7 +291,9 @@ public class Board {
                for (char validValue : this.validValues) {
                   Board neighbor = new Board(this.cells);
                   neighbor.cells.get(r).set(c, validValue);
-                  neighbors.add(neighbor);
+                  if (neighbor.isValidMove(r, c)) {
+                     neighbors.add(neighbor);
+                  }
                }
                return neighbors;
             }
@@ -281,58 +303,18 @@ public class Board {
       return new ArrayList<Board>();
    }
 
-   public static int getCost(Board currentBoard, Board nextBoard) {
-      // g = cost from start node to current node
-      int g = currentBoard.cost;
-      // h = estimated distance from the current node to the end node
-      int h = nextBoard.getConstraints().size();
-
-      return g + h;
-   }
-
-   public Board solveAStar() {
-      ArrayList<Board> queue = new ArrayList<Board>();
-      queue.add(this);
-
-      while (!queue.isEmpty()) {
-         Board board = queue.remove(0);
-         if (board.isFull()) {
-            if (board.isValid()) {
-               return board;
-            }
-         }
-         ArrayList<Board> neighbors = board.getNeighbors();
-         System.out.println(neighbors);
-         for (Board neighbor : neighbors) {
-            neighbor.cost = Board.getCost(board, neighbor);
-            boolean isPathAdded = false;
-            int i = 0;
-            while (!isPathAdded && i < queue.size()) {
-               if (neighbor.cost < queue.get(i).cost) {
-                  queue.add(i, neighbor);
-                  isPathAdded = true;
-               } else {
-                  i++;
-               }
-            }
-            if (queue.size() == 0) {
-               queue.add(neighbor);
-            }
-         }
-      }
-
-      return this;
-   }
-
    public Board solveDFS() {
       ArrayList<Board> queue = new ArrayList<Board>();
       queue.add(this);
+      int boardsVisited = 0;
 
       while (!queue.isEmpty()) {
-         Board currentBoard = queue.remove(queue.size() - 1);
+         Board currentBoard = queue.remove(0);
+         boardsVisited++;
 
          if (currentBoard.isFull()) {
             if (currentBoard.isValid()) {
+               System.out.println("Boards visited: " + boardsVisited);
                return currentBoard;
             }
          }

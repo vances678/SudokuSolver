@@ -8,6 +8,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -101,32 +102,27 @@ public class SudokuGui {
       JPanel mainButtonPanel = new JPanel(new GridLayout(1, 2, 20, 20));
 
       JPanel leftButtonPanel = new JPanel(new GridLayout(4, 1, 20, 20));
-      JButton solveAStarButton = createButton("Solve (A*)", new Color(119, 221, 118));
-      solveAStarButton.addActionListener(e -> {
-         updateBoardData();
-         Board solutionBoard = board.solveAStar();
-         if (solutionBoard.equals(board)) {
-            System.err.println("Board already solved or error solving board");
-         } else {
-            solutionBoard.print();
-         }
-      });
       JButton solveDFSButton = createButton("Solve (DFS)", new Color(195, 177, 225));
       solveDFSButton.addActionListener(e -> {
-         updateBoardData();
-         solutionBoard = board.solveDFS();
-         if (solutionBoard.equals(board)) {
-            System.err.println("Board already solved or error solving board");
+         if (board.size > 9) {
+            JOptionPane.showMessageDialog(null, "Board too large to solve :(");
          } else {
-            System.out.println("");
+            updateBoardData();
             System.out.println("----------------------");
-            System.out.println("Input:");
-            board.print();
-            System.out.println();
-            System.out.println("Solution:");
-            solutionBoard.print();
+            System.out.println("SOLVING WITH DFS");
             System.out.println("----------------------");
-            updateLabels();
+            solutionBoard = board.solveDFS();
+            if (solutionBoard.equals(board)) {
+               System.err.println("Board already solved or error solving board");
+            } else {
+               System.out.println("Input:");
+               board.print();
+               System.out.println();
+               System.out.println("Solution:");
+               solutionBoard.print();
+               System.out.println("----------------------");
+               updateLabels();
+            }
          }
       });
       JButton checkButton = createButton("Check", new Color(233, 236, 107));
@@ -141,7 +137,6 @@ public class SudokuGui {
          }
          updateBoardData();
       });
-      leftButtonPanel.add(solveAStarButton);
       leftButtonPanel.add(solveDFSButton);
       leftButtonPanel.add(checkButton);
       leftButtonPanel.add(clearButton);
