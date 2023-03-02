@@ -22,15 +22,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 public class SudokuGui {
-   /** A representation of the input Sudoku board */
-   private Board board;
-   /** A representation of the solution Sudoku board */
-   private Board solutionBoard;
-   /** The text fields that collectively form the input Sudoku board */
-   private JTextField[] textFields;
-   /** The labels that collectively form the solution Sudoku board */
-   private JLabel[] labels;
-
    /**
     * Instantiates a Sudoku Solver GUI
     * 
@@ -60,6 +51,21 @@ public class SudokuGui {
       frame.pack();
       frame.setVisible(true);
    }
+
+   /** The width of the GUI window */
+   private static final int WINDOW_WIDTH = 900;
+   /** The height of the GUI window */
+   private static final int WINDOW_HEIGHT = 300;
+   /** The maximum board size that can be solved */
+   private static final int MAX_SOLVE_SIZE = 9;
+   /** A representation of the input Sudoku board */
+   private Board board;
+   /** A representation of the solution Sudoku board */
+   private Board solutionBoard;
+   /** The text fields that collectively form the input Sudoku board */
+   private JTextField[] textFields;
+   /** The labels that collectively form the solution Sudoku board */
+   private JLabel[] labels;
 
    /**
     * Updates the representation of the input Sudoku board with the actual values
@@ -124,8 +130,8 @@ public class SudokuGui {
    private JFrame createMainFrame() {
       JFrame frame = new JFrame("Sudoku Solver");
       frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-      frame.setMinimumSize(new Dimension(900, 300));
-      frame.setPreferredSize(new Dimension(1350, 450));
+      frame.setMinimumSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
+      frame.setPreferredSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
       frame.setLayout(new GridLayout(1, 4, 20, 20));
       return frame;
    }
@@ -139,20 +145,20 @@ public class SudokuGui {
       JPanel mainButtonPanel = new JPanel(new GridLayout(1, 2, 20, 20));
 
       JPanel leftButtonPanel = new JPanel(new GridLayout(4, 1, 20, 20));
-      JButton solveDFSButton = createButton("Solve (DFS)", new Color(195, 177, 225));
+      JButton solveDFSButton = createButton("Solve (DFS)");
       solveDFSButton.addActionListener(e -> {
-         if (board.size > 9) {
+         if (board.size > MAX_SOLVE_SIZE) {
             JOptionPane.showMessageDialog(null, "Board too large to solve :(");
          } else {
             showSolution();
          }
       });
-      JButton checkButton = createButton("Check", new Color(233, 236, 107));
+      JButton checkButton = createButton("Check");
       checkButton.addActionListener(e -> {
          updateBoardData();
          board.checkValidity();
       });
-      JButton clearButton = createButton("Clear", new Color(255, 105, 98));
+      JButton clearButton = createButton("Clear");
       clearButton.addActionListener(e -> {
          for (JTextField textField : textFields) {
             textField.setText("");
@@ -185,7 +191,7 @@ public class SudokuGui {
     * @return The created JButton
     */
    private JButton createNewBoardButton(int boardSize) {
-      JButton button = createButton("New " + boardSize + "x" + boardSize, new Color(137, 207, 240));
+      JButton button = createButton("New " + boardSize + "x" + boardSize);
       button.addActionListener(e -> {
          Board newBoard = Board.random(boardSize);
          SudokuGui newSudokuGui = new SudokuGui(newBoard);
@@ -195,16 +201,14 @@ public class SudokuGui {
    }
 
    /**
-    * Creates a new button
+    * Creates a new unfocused button
     * 
     * @param title The title of the button
-    * @param color The color of the button (shown when run on a Windows OS)
     * @return The created JButton
     */
-   private JButton createButton(String title, Color color) {
+   private JButton createButton(String title) {
       JButton button = new JButton(title);
       button.setFocusPainted(false);
-      button.setBackground(color);
       return button;
    }
 

@@ -1,6 +1,6 @@
 
 /**
- * Solves sudoku puzzles with DFS
+ * Solves Sudoku puzzles with DFS
  * 
  * Credit to:
  * https://lipas.uwasa.fi/~timan/sudoku/
@@ -13,13 +13,16 @@
  * for the 25x25 sudoku puzzle
  * 
  * @author Vance Spears
- * @version 2023/12/2
+ * @version 2023/01/3
  */
 
 public class SudokuSolver {
    public static void main(String args[]) {
-      Board board = Board.random(9);
+      Board board = Board.random(INITIAL_BOARD_SIZE);
       SudokuGui sudokuGui = new SudokuGui(board);
       sudokuGui.showGui();
    }
+
+   /** The size of the Sudoku board on the starting window */
+   private static final int INITIAL_BOARD_SIZE = 9;
 }

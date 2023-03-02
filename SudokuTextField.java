@@ -112,7 +112,7 @@ public class SudokuTextField extends JTextField {
                   } else {
                      focusOwner = nextFocusOwner;
                   }
-                  if (counter > focusSwitchLimit) {
+                  if (counter > FOCUS_SWITCH_LIMIT) {
                      shouldStopSwitchingFocus = true;
                   }
                   counter++;
@@ -126,5 +126,5 @@ public class SudokuTextField extends JTextField {
     * the maximum number of focus switches allowed when searching for the next
     * empty text field
     */
-   private int focusSwitchLimit = 999;
+   private static final int FOCUS_SWITCH_LIMIT = 999;
 }
