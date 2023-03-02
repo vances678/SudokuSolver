@@ -1,18 +1,33 @@
-import java.awt.geom.Point2D;
+
+/**
+ * A class that represents a Sudoku board
+ * 
+ * @author Vance Spears
+ * @version 2023/01/3
+ */
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Board {
+   /** The size of the board's rows and columns */
    public int size;
+   /** The size of the board's boxes */
    public int boxSize;
+   /** The values of the board cells */
    public ArrayList<ArrayList<Character>> cells;
+   /** All legal move values */
    public List<Character> validValues;
-   public int cost;
-   public ArrayList<Point2D> constraints;
 
+   /**
+    * Creates a new empty board
+    * 
+    * @param boardSize The size of the board's rows and columns
+    */
    public Board(int boardSize) {
       this.size = boardSize;
       this.boxSize = (int) Math.sqrt(boardSize);
@@ -40,11 +55,22 @@ public class Board {
       this.validValues = possibleValues.subList(0, boardSize);
    }
 
+   /**
+    * Creates a new board with specified cells
+    * 
+    * @param cells The board's cells
+    */
    public Board(ArrayList<ArrayList<Character>> cells) {
       this(cells.get(0).size());
       this.updateCells(cells);
    }
 
+   /**
+    * Creates a new board from the values of a randomly chosen puzzle text file
+    * 
+    * @param boardSize The size of the board's rows and columns
+    * @return
+    */
    public static Board random(int boardSize) {
       ArrayList<ArrayList<Character>> cells = new ArrayList<ArrayList<Character>>();
       File folder = new File("puzzles/" + boardSize + "x" + boardSize);
@@ -65,28 +91,21 @@ public class Board {
                         value = '0';
                      }
                   }
-                  // Replaces Q-Y with 1-9 and '.' with '0' for 16x16
+                  // Replaces Q-Y with 1-9 and '.' with '0' for 25x25
                   if (boardSize == 25) {
-                     if (value == '.') {
-                        value = '0';
-                     } else if (value == 'Q') {
-                        value = '1';
-                     } else if (value == 'R') {
-                        value = '2';
-                     } else if (value == 'S') {
-                        value = '3';
-                     } else if (value == 'T') {
-                        value = '4';
-                     } else if (value == 'U') {
-                        value = '5';
-                     } else if (value == 'V') {
-                        value = '6';
-                     } else if (value == 'W') {
-                        value = '7';
-                     } else if (value == 'X') {
-                        value = '8';
-                     } else if (value == 'Y') {
-                        value = '9';
+                     Map<Character, Character> characterReplacements = Map.of(
+                           '.', '0',
+                           'Q', '1',
+                           'R', '2',
+                           'S', '3',
+                           'T', '4',
+                           'U', '5',
+                           'V', '6',
+                           'W', '7',
+                           'X', '8',
+                           'Y', '9');
+                     if (characterReplacements.containsKey(value)) {
+                        value = characterReplacements.get(value);
                      }
                   }
                   row.add(value);
@@ -103,6 +122,9 @@ public class Board {
       return new Board(cells);
    }
 
+   /**
+    * Outputs the board to the console
+    */
    public void print() {
       for (int i = 0; i < this.size; i++) {
          if (i % this.boxSize == 0 && i != 0) {
@@ -118,6 +140,11 @@ public class Board {
       }
    }
 
+   /**
+    * Updates the board's cells
+    * 
+    * @param newCells The new board cells
+    */
    public void updateCells(ArrayList<ArrayList<Character>> newCells) {
       if (newCells.size() == this.size && newCells.get(0).size() == this.size) {
          for (int r = 0; r < newCells.size(); r++) {
@@ -131,6 +158,11 @@ public class Board {
       }
    }
 
+   /**
+    * Checks if the board is valid
+    * 
+    * @return true if the board is valid (otherwise, false)
+    */
    public boolean isValid() {
       ArrayList<Boolean> validity = new ArrayList<Boolean>();
       validity.add(this.areRowsValid());
@@ -142,6 +174,10 @@ public class Board {
       return false;
    }
 
+   /**
+    * Checks and outputs the validity of the rows, columns, boxes, and entire board
+    * to the console
+    */
    public void checkValidity() {
       System.out.println();
       this.print();
@@ -163,6 +199,11 @@ public class Board {
       }
    }
 
+   /**
+    * Checks if all boxes in the board are valid
+    * 
+    * @return true if all boxes are valid (otherwise, false)
+    */
    public boolean areBoxesValid() {
       for (int i = 0; i < this.size; i += this.boxSize) {
          for (int j = 0; j < this.size; j += this.boxSize) {
@@ -174,6 +215,13 @@ public class Board {
       return true;
    }
 
+   /**
+    * Checks if the specified box is valid
+    * 
+    * @param startRow The index of the row where the box starts
+    * @param startCol The index of the column where the box starts
+    * @return true if the specified box is valid (otherwise, false)
+    */
    public boolean isBoxValid(int startRow, int startCol) {
       ArrayList<Character> values = new ArrayList<Character>();
       for (int i = 0; i < this.boxSize; i++) {
@@ -191,6 +239,11 @@ public class Board {
       return true;
    }
 
+   /**
+    * Checks if all rows in the board are valid
+    * 
+    * @return true if all rows are valid (otherwise, false)
+    */
    public boolean areRowsValid() {
       for (int i = 0; i < this.size; i++) {
          if (!this.isRowValid(i)) {
@@ -200,6 +253,12 @@ public class Board {
       return true;
    }
 
+   /**
+    * Checks if the specified row is valid
+    * 
+    * @param rowIndex The index of the row to check
+    * @return true if the specified row is valid (otherwise, false)
+    */
    public boolean isRowValid(int rowIndex) {
       ArrayList<Character> values = new ArrayList<Character>();
       for (char value : cells.get(rowIndex)) {
@@ -212,6 +271,11 @@ public class Board {
       return true;
    }
 
+   /**
+    * Checks if all columns in the board are valid
+    * 
+    * @return true if all columns are valid (otherwise, false)
+    */
    public boolean areColumnsValid() {
       for (int i = 0; i < this.size; i++) {
          if (!this.isColumnValid(i)) {
@@ -221,6 +285,12 @@ public class Board {
       return true;
    }
 
+   /**
+    * Checks if the specified column is valid
+    * 
+    * @param columnIndex The index of the column to check
+    * @return true if the specified column is valid (otherwise, false)
+    */
    public boolean isColumnValid(int columnIndex) {
       ArrayList<Character> values = new ArrayList<Character>();
       for (ArrayList<Character> row : cells) {
@@ -234,6 +304,11 @@ public class Board {
       return true;
    }
 
+   /**
+    * Checks if the board is full
+    * 
+    * @return true if all cells in the board have a value (otherwise, false)
+    */
    public boolean isFull() {
       boolean isFull = true;
       for (ArrayList<Character> row : this.cells) {
@@ -246,6 +321,13 @@ public class Board {
       return isFull;
    }
 
+   /**
+    * Checks if a move that has already been made is valid
+    * 
+    * @param moveRow The row of the move
+    * @param moveCol The column of the move
+    * @return true if the move is valid (otherwise, false)
+    */
    public boolean isValidMove(int moveRow, int moveCol) {
       boolean isValidMove = true;
       char move = this.cells.get(moveRow).get(moveCol);
@@ -280,6 +362,11 @@ public class Board {
       return isValidMove;
    }
 
+   /**
+    * Gets the neighboring boards
+    * 
+    * @return A list of neighbor boards
+    */
    public ArrayList<Board> getNeighbors() {
       // fill first empty cell with all possible VALID values
       ArrayList<Board> neighbors = new ArrayList<Board>();
@@ -303,6 +390,11 @@ public class Board {
       return new ArrayList<Board>();
    }
 
+   /**
+    * Solves the board with DFS
+    * 
+    * @return The solved board (or the starting board if no solution is found)
+    */
    public Board solveDFS() {
       ArrayList<Board> queue = new ArrayList<Board>();
       queue.add(this);

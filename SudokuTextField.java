@@ -1,17 +1,29 @@
+
+/**
+ * A text field extension for custom board input functionality
+ * 
+ * @author Vance Spears
+ * @version 2023/01/3
+ */
+
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusEvent.Cause;
+import java.awt.event.FocusListener;
+
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.text.AbstractDocument;
-import javax.swing.text.DocumentFilter;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
-import java.awt.KeyboardFocusManager;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.FocusEvent.Cause;
-import java.awt.Component;
-import java.awt.Container;
+import javax.swing.text.DocumentFilter;
 
 public class SudokuTextField extends JTextField {
+   /**
+    * Creates a new empty Sudoku text field
+    */
    public SudokuTextField() {
       this.setHorizontalAlignment(SwingConstants.CENTER);
       AbstractDocument doc = (AbstractDocument) this.getDocument();
@@ -21,7 +33,9 @@ public class SudokuTextField extends JTextField {
          public void focusGained(FocusEvent e) {
             if (e.getCause() == Cause.ACTIVATION) {
                // remove the focus gained when starting application
-               KeyboardFocusManager.getCurrentKeyboardFocusManager().clearFocusOwner();
+               KeyboardFocusManager
+                     .getCurrentKeyboardFocusManager()
+                     .clearFocusOwner();
             } else {
                // selects text when focus is gained
                selectAll();
@@ -35,13 +49,24 @@ public class SudokuTextField extends JTextField {
       });
    }
 
-   class DocumentLengthFilter extends DocumentFilter {
-      public void insertString(DocumentFilter.FilterBypass fb, int offset, String text, AttributeSet attrs)
+   public class DocumentLengthFilter extends DocumentFilter {
+      @Override
+      public void insertString(
+            DocumentFilter.FilterBypass fb,
+            int offset,
+            String text,
+            AttributeSet attrs)
             throws BadLocationException {
          super.insertString(fb, offset, text, attrs);
       }
 
-      public void replace(DocumentFilter.FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
+      @Override
+      public void replace(
+            DocumentFilter.FilterBypass fb,
+            int offset,
+            int length,
+            String text,
+            AttributeSet attrs)
             throws BadLocationException {
          // converts all input text to uppercase (ex. A instead of a)
          text = text.toUpperCase();
@@ -60,7 +85,9 @@ public class SudokuTextField extends JTextField {
          }
       }
 
-      // finds and switches focus to the next empty SudokuTextField
+      /**
+       * finds and switches focus to the next empty SudokuTextField
+       */
       private void focusNextEmptyField() {
          boolean shouldStopSwitchingFocus = false;
          int counter = 0;
@@ -85,7 +112,7 @@ public class SudokuTextField extends JTextField {
                   } else {
                      focusOwner = nextFocusOwner;
                   }
-                  if (counter > 9999) {
+                  if (counter > focusSwitchLimit) {
                      shouldStopSwitchingFocus = true;
                   }
                   counter++;
@@ -94,4 +121,10 @@ public class SudokuTextField extends JTextField {
          }
       }
    }
+
+   /**
+    * the maximum number of focus switches allowed when searching for the next
+    * empty text field
+    */
+   private int focusSwitchLimit = 999;
 }

@@ -1,3 +1,11 @@
+
+/**
+ * Handles the user interface for the Sudoku solver
+ * 
+ * @author Vance Spears
+ * @version 2023/01/3
+ */
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
@@ -14,17 +22,29 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 public class SudokuGui {
+   /** A representation of the input Sudoku board */
    private Board board;
+   /** A representation of the solution Sudoku board */
    private Board solutionBoard;
+   /** The text fields that collectively form the input Sudoku board */
    private JTextField[] textFields;
+   /** The labels that collectively form the solution Sudoku board */
    private JLabel[] labels;
 
+   /**
+    * Instantiates a Sudoku Solver GUI
+    * 
+    * @param board The initial Sudoku board
+    */
    public SudokuGui(Board board) {
       this.board = board;
       this.textFields = new JTextField[board.size * board.size];
       this.labels = new JLabel[board.size * board.size];
    }
 
+   /**
+    * Creates and displays the Sudoku Solver GUI
+    */
    public void showGui() {
       JFrame frame = createMainFrame();
 
@@ -41,6 +61,10 @@ public class SudokuGui {
       frame.setVisible(true);
    }
 
+   /**
+    * Updates the representation of the input Sudoku board with the actual values
+    * from the input text fields
+    */
    private void updateBoardData() {
 
       // initialize empty board to store rearranged textField values
@@ -69,6 +93,9 @@ public class SudokuGui {
       this.board.updateCells(values);
    }
 
+   /**
+    * Updates the solution labels with current values of the solution board
+    */
    private void updateLabels() {
       for (int row = 0; row < this.solutionBoard.boxSize; row++) {
          for (int col = 0; col < this.solutionBoard.boxSize; col++) {
@@ -89,6 +116,11 @@ public class SudokuGui {
       }
    }
 
+   /**
+    * Creates the GUI's main frame
+    * 
+    * @return The main JFrame
+    */
    private JFrame createMainFrame() {
       JFrame frame = new JFrame("Sudoku Solver");
       frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -98,6 +130,11 @@ public class SudokuGui {
       return frame;
    }
 
+   /**
+    * Creates the GUI's button panel
+    * 
+    * @return The button JPanel
+    */
    private JPanel createButtonPanel() {
       JPanel mainButtonPanel = new JPanel(new GridLayout(1, 2, 20, 20));
 
@@ -107,22 +144,7 @@ public class SudokuGui {
          if (board.size > 9) {
             JOptionPane.showMessageDialog(null, "Board too large to solve :(");
          } else {
-            updateBoardData();
-            System.out.println("----------------------");
-            System.out.println("SOLVING WITH DFS");
-            System.out.println("----------------------");
-            solutionBoard = board.solveDFS();
-            if (solutionBoard.equals(board)) {
-               System.err.println("Board already solved or error solving board");
-            } else {
-               System.out.println("Input:");
-               board.print();
-               System.out.println();
-               System.out.println("Solution:");
-               solutionBoard.print();
-               System.out.println("----------------------");
-               updateLabels();
-            }
+            showSolution();
          }
       });
       JButton checkButton = createButton("Check", new Color(233, 236, 107));
@@ -156,6 +178,12 @@ public class SudokuGui {
       return mainButtonPanel;
    }
 
+   /**
+    * Creates a button that shows a new Sudoku Solver GUI window
+    * 
+    * @param boardSize The size of the Sudoku board to be shown
+    * @return The created JButton
+    */
    private JButton createNewBoardButton(int boardSize) {
       JButton button = createButton("New " + boardSize + "x" + boardSize, new Color(137, 207, 240));
       button.addActionListener(e -> {
@@ -166,6 +194,13 @@ public class SudokuGui {
       return button;
    }
 
+   /**
+    * Creates a new button
+    * 
+    * @param title The title of the button
+    * @param color The color of the button (shown when run on a Windows OS)
+    * @return The created JButton
+    */
    private JButton createButton(String title, Color color) {
       JButton button = new JButton(title);
       button.setFocusPainted(false);
@@ -173,6 +208,12 @@ public class SudokuGui {
       return button;
    }
 
+   /**
+    * Creates a Sudoku board
+    * 
+    * @param isSolution Whether or not the board is used to display the solution
+    * @return The JPanel that holds the Sudoku board
+    */
    private JPanel createBoardPanel(boolean isSolution) {
       JPanel boardPanel = new JPanel(new GridLayout(this.board.boxSize, this.board.boxSize, 0, 0));
       for (int row = 0; row < this.board.boxSize; row++) {
@@ -210,6 +251,12 @@ public class SudokuGui {
       return boardPanel;
    }
 
+   /**
+    * Creates a centered layout around the provided panel
+    * 
+    * @param childPanel The panel to be centered
+    * @return The created JPanel
+    */
    private JPanel createCenteredPanel(JPanel childPanel) {
       JPanel gridPanel = new JPanel(new GridBagLayout());
       JPanel centerPanel = new JPanel(new GridLayout(1, 1)) {
@@ -223,5 +270,27 @@ public class SudokuGui {
       centerPanel.add(childPanel);
       gridPanel.add(centerPanel);
       return gridPanel;
+   }
+
+   /**
+    * Shows the input board's solution in the GUI and the console, if a
+    * solution exists
+    */
+   private void showSolution() {
+      updateBoardData();
+      System.out.println("----------------------");
+      System.out.println("SOLVING WITH DFS");
+      System.out.println("----------------------");
+      solutionBoard = board.solveDFS();
+      if (solutionBoard.equals(board)) {
+         System.err.println("Board already solved or error solving board");
+      } else {
+         System.out.println("Input:");
+         board.print();
+         System.out.println();
+         System.out.println("Solution:");
+         solutionBoard.print();
+         updateLabels();
+      }
    }
 }

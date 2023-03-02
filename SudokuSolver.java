@@ -1,9 +1,8 @@
 
 /**
- * solves sudoku puzzles with A*
+ * Solves sudoku puzzles with DFS
  * 
- * credit to:
- * 
+ * Credit to:
  * https://lipas.uwasa.fi/~timan/sudoku/
  * for txt files of 9x9 sudoku puzzles and corresponding solutions
  * 
@@ -24,19 +23,3 @@ public class SudokuSolver {
       sudokuGui.showGui();
    }
 }
-
-/*
- * A-star ideas
- * --------------
- * - Weigh each number based on how many times it has already been used --> sort
- * cells highest weights first
- * 
- * - Pick cells with least amount of choices (ex. (1 or 2) vs (2, 5, 7 or 8))
- * --- maybe (row options + column options + box options)?
- * 
- * - Do a lot of pruning (eliminate branches before continuing search)
- * --- row, col, box incorrect
- * 
- * 
- * If none of this works, can resort to backtracking with DFS
- */
